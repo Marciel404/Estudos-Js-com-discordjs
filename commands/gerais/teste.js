@@ -4,37 +4,40 @@ module.exports = {
     data: new SlashCommandBuilder()
     .setName("teste1")
     .setDescription("Teste1")
-    .addChannelOption((option) => 
+    .addIntegerOption((option) => 
       option
-        .setName("channel")
+        .setName("numero")
         .setDescription("Teste")
+        .setRequired(true)
     ),
-    async execute(interaction ) {
+    async execute(interaction) {
 
-      if (interaction.options.getChannel("channel") == null || interaction.options.getChannel("channel").type != ChannelType.GuildText) {
-        return await interaction.reply(
-          {
-            content: "Você precisa digitar um canal valido",
-            ephemeral: true
-          }
-        )
-      }
+      // if (interaction.options.getChannel("channel") == null || interaction.options.getChannel("channel").type != ChannelType.GuildText) {
+      //   return await interaction.reply(
+      //     {
+      //       content: "Você precisa digitar um canal valido",
+      //       ephemeral: true
+      //     }
+      //   )
+      // }
 
-      await interaction.reply({content: "tests"})
+      const valor = interaction.options.get("numero")["value"]
+
+      if (valor < 0) { return await interaction.reply({content: "O numero precisa ser maior que 0", ephemeral: true})}
+
 
       e = new EmbedBuilder()
+                .setTitle("testee")
 
-      e.setTitle("testee")
+  
+      let x = 0
 
-      for (const i of range({ start: 0, end: 11, step: 2 })){
-        e.addFields({name: `${i}`, value: `${i}`})
+      for (const i of range({ start: valor, end: valor*11, step: valor })){
+        x++
+        e.addFields({name: `${interaction.options.get("numero")["value"]} x ${x}`, value: `${i}`})
       }
 
-      try{
-        await interaction.user.send({content: "Teste", embeds: [e]})
-      } catch (err) {
-        const channel = interaction.options.getChannel("channel")
-        await channel.send({content: "Não consegui enviar mensagem"})
-      }
+      await interaction.reply({embeds: [e], ephemeral: true})
+
 	},
 }

@@ -9,18 +9,25 @@ const commandSlash  = new Collection()
 let commands = []
 
 function loadCommands(path) {
+    try {
 
-    fs.readdir(path, (error, subFolderPath) => {
-        fs.readdir(`${path}/${subFolderPath}`, (error, files) => {
-            files.forEach((files) => {
-                if (files.endsWith(".js")) {
-                    let command = require(`.${path}/${subFolderPath}/${files}`)
-                    commands.push(command.data.toJSON())
-                    commandSlash.set(command.data.name, command)
-                }
-            })
+        fs.readdir(path, (error, subFolderPath) => {
+            for (const name of subFolderPath){
+                fs.readdir(`${path}/${[name]}`, (error, files) => {
+                    files.forEach((files) => {
+                        if (files.endsWith(".js")) {
+                            let command = require(`.${path}/${name}/${files}`)
+                            commands.push(command.data.toJSON())
+                            commandSlash.set(command.data.name, command)
+                        }
+                    })
+                })
+            }
         })
-    })
+
+    } catch (err) {
+        console.log(err)
+    }
 
 }
 
@@ -36,7 +43,7 @@ async function loadSlash(CLIENT_ID){
         console.log(`Recarreguei ${data.length} Slash Commands.`);
     } catch (error) {
 
-        console.error(error);
+        console.log(error);
     }
 }
 
